@@ -7,7 +7,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <head>
       
         <link rel="icon" href="/favicon.png"></link>
-        <title>My Pricing Page</title>
+        <title>Face Tracking Application</title>
       </head>
       <body>
         <main>{children}</main>
