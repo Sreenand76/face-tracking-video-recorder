@@ -8,7 +8,7 @@ This is a Next.js project featuring real-time face recognition with a sleek user
 
 - Real-time face recognition powered by **Face-api.js**
 - Enhanced animations and transitions with Framer Motion
-- Video recording functionality
+- Video recording and preview functionality
 - Fully responsive and accessible design
 
 ---
@@ -28,8 +28,8 @@ This is a Next.js project featuring real-time face recognition with a sleek user
 - Uses **Face-api.js** to detect faces and display bounding boxes, facial landmarks, and other features.
 
 
-### 📹 Video Recording 
-- Records real-time face detection results .
+### 📹 Video Recording and Preview
+- Records real-time face detection results and provides a playback preview.
 
 ### ⚡ Animations
 - Smooth UI transitions and interactive animations implemented using **Framer Motion**.
