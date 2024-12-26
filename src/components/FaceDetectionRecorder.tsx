@@ -4,6 +4,7 @@ import * as faceapi from "face-api.js";
 import { motion } from "framer-motion";
 import ControlButtons from "./ControlButtons";
 import { toast } from "react-toastify";
+import VideoPreview from "./VideoPreview";
 
 
 const FaceDetectionRecorder: React.FC = () => {
@@ -13,7 +14,8 @@ const FaceDetectionRecorder: React.FC = () => {
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [intervalId, setIntervalId] = useState<ReturnType<typeof setInterval> | null>(null);
-  
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     const initialize = async () => {
@@ -127,45 +129,58 @@ const FaceDetectionRecorder: React.FC = () => {
       return () => clearInterval(interval);
     }
   }, []);
-  
+
   const startRecording = () => {
-    toast.success("Video recording started", { autoClose: 3000 });
     if (mediaRecorder) {
-      mediaRecorder.stop(); // Stop previous recording if any
+      mediaRecorder.stop(); // Stop any existing recording
     }
     if (combinedCanvasRef.current) {
-      const stream = combinedCanvasRef.current.captureStream(30); // Capture the combined canvas stream
-      const recorder = new MediaRecorder(stream);
+      const stream = combinedCanvasRef.current.captureStream(30); // Capture canvas stream at 30 fps
+      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" }); // Specify MIME type
       setMediaRecorder(recorder);
 
+      const chunks: Blob[] = [];
       recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          setRecordedChunks((prev) => [...prev, event.data]);
+        if (event.data && event.data.size > 0) {
+          chunks.push(event.data);
         }
       };
 
-      recorder.start();
-      console.log("Recording started.");
-      setIsRecording(true)
+      recorder.onstop = () => {
+        if (chunks.length > 0) {
+          const blob = new Blob(chunks, { type: "video/webm" });
+          const url = URL.createObjectURL(blob);
+          setVideoPreviewUrl(url);
+          toast.success("Video recording stopped", { autoClose: 3000 });
+          localStorage.setItem("video", url);
+          setRecordedChunks([]);
+        } else {
+          toast.error("Recording failed. No data available.", { autoClose: 3000 });
+        }
+        setIsRecording(false);
+      };
+
+      recorder.start(100); // Emit `ondataavailable` every 100ms
+      toast.success("Video recording started", { autoClose: 3000 });
+      setIsRecording(true);
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorder) {
-      mediaRecorder.stop();
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: "video/webm" });
-        const url = URL.createObjectURL(blob);
-        toast.success("Video recording stopped", { autoClose: 3000 });
-        localStorage.setItem("video", url);
-        setIsRecording(false)
-      };
+      mediaRecorder.stop(); // Stop recording
+    } else {
+      toast.error("No recording in progress to stop", { autoClose: 3000 });
     }
+    setIsRecording(false);
   };
 
+  const handleBack = () => {
+    setShowPreview(false);
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[90vh] bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-[92vh] bg-gray-100">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -183,8 +198,29 @@ const FaceDetectionRecorder: React.FC = () => {
           className="absolute top-0 left-0 w-full h-full"
         />
       </motion.div>
-      <ControlButtons isRecording={isRecording} onStart={startRecording} onStop={stopRecording} />     
+      <ControlButtons isRecording={isRecording} onStart={startRecording} onStop={stopRecording} />
+
+      {videoPreviewUrl && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mt-7 md:mt-4"
+        >
+          <span
+            onClick={() => { setShowPreview(true); }}
+            className="text-blue-600 text-xl font-semibold cursor-pointer hover:text-blue-800 hover:scale-105 hover:shadow-md transition-all duration-300"
+          >
+            Show Video Preview
+          </span>
+        </motion.div>
+      )}
+
+      {showPreview && videoPreviewUrl && (
+        <VideoPreview videoUrl={videoPreviewUrl} onBack={handleBack} />
+      )}
     </div>
+
   );
 };
 
