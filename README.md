@@ -1,4 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Face Recognition Application with Dark Mode and UI Enhancements
+
+This is a Next.js project featuring real-time face recognition with a sleek user interface, and enhanced animations. It leverages **Face-api.js**, **Tailwind CSS**, and **Framer Motion** to provide a seamless and responsive experience.
+
+---
+
+## 🌟 Features
+
+- Real-time face recognition powered by **Face-api.js**
+- Enhanced animations and transitions with Framer Motion
+- Video recording functionality
+- Fully responsive and accessible design
+
+---
+
+## 🛠️ Technology Stack
+
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Face Detection**: [Face-api.js](https://github.com/justadudewhohacks/face-api.js)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+
+---
+
+## 🚀 Key Functionalities
+
+### 🎥 Real-Time Face Detection
+- Uses **Face-api.js** to detect faces and display bounding boxes, facial landmarks, and other features.
+
+
+### 📹 Video Recording 
+- Records real-time face detection results .
+
+### ⚡ Animations
+- Smooth UI transitions and interactive animations implemented using **Framer Motion**.
+
+---
 
 ## Getting Started
 
