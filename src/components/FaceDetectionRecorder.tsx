@@ -20,12 +20,13 @@ const FaceDetectionRecorder: React.FC = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
+         // Access webcam and set video stream
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
         }
-
+        // Load faceapi models
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
           faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
@@ -39,6 +40,7 @@ const FaceDetectionRecorder: React.FC = () => {
     initialize();
 
     return () => {
+      // Cleanup: Stop video stream on unmount
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((track) => track.stop());
@@ -51,6 +53,7 @@ const FaceDetectionRecorder: React.FC = () => {
 
 
   const handleFaceDetection = async () => {
+    // Detect faces and landmarks
     if (videoRef.current && combinedCanvasRef.current) {
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
@@ -136,7 +139,7 @@ const FaceDetectionRecorder: React.FC = () => {
     }
     if (combinedCanvasRef.current) {
       const stream = combinedCanvasRef.current.captureStream(30); // Capture canvas stream at 30 fps
-      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" }); // Specify MIME type
+      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" }); 
       setMediaRecorder(recorder);
 
       const chunks: Blob[] = [];
