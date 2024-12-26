@@ -1,4 +1,4 @@
-# Face Recognition Application with Dark Mode and UI Enhancements
+# Face Recognition Application 
 
 This is a Next.js project featuring real-time face recognition with a sleek user interface, and enhanced animations. It leverages **Face-api.js**, **Tailwind CSS**, and **Framer Motion** to provide a seamless and responsive experience.
 
